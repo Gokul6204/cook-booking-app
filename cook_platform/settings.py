@@ -12,10 +12,8 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = env('SECRET_KEY')
-# DEBUG = env.bool('DEBUG')
-DEBUG = False
+DEBUG = env.bool('DEBUG')
 ALLOWED_HOSTS = ["cook-booking-app.onrender.com"]
-# ALLOWED_HOSTS = ['COOK-DJANGO-PROJECT.onrender.com']
 
 
 INSTALLED_APPS = [
