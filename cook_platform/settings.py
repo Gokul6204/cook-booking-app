@@ -39,8 +39,6 @@ INSTALLED_APPS = [
     'core',
 ]
 
-INSTALLED_APPS += ['cloudinary', 'cloudinary_storage']
-
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': env('CLOUDINARY_API_KEY'),
