@@ -1,1 +1,1 @@
-web: gunicorn COOK-DJANGO-PROJECT.wsgi
+web: web: gunicorn cook_platform.wsgi
