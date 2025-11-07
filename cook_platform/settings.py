@@ -9,7 +9,27 @@ import environ
 env = environ.Env()
 environ.Env.read_env()
 
+
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# CLOUDINARY CONFIG
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+from cloudinary.storage import RawMediaCloudinaryStorage
+from cloudinary_storage.storage import MediaCloudinaryStorage
+from cloudinary_storage.storage import RawMediaCloudinaryStorage
+
+
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': env('CLOUDINARY_CLOUD_NAME'),
+    'API_KEY': env('CLOUDINARY_API_KEY'),
+    'API_SECRET': env('CLOUDINARY_API_SECRET'),
+}
+
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+
 
 SECRET_KEY = env('SECRET_KEY')
 DEBUG = env.bool('DEBUG')
@@ -24,6 +44,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary',
+    'cloudinary_storage',
     'core',
 ]
 
