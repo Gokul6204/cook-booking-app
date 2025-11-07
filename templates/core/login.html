@@ -1,0 +1,37 @@
+{% extends 'core/base.html' %}
+{% block title %}Login - Cook Booking Platform{% endblock %}
+{% block content %}
+<h2>Login</h2>
+<form method="post" class="form" id="loginForm" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-grid">
+    <label>Username {{ form.username }} {{ form.username.errors }}</label>
+    <label>Password {{ form.password }} {{ form.password.errors }}</label>
+  </div>
+  <button type="submit" class="btn">Login</button>
+  <p class="mt">No account? <a href="{% url 'register' %}">Register</a></p>
+  <ul class="errors" id="loginErrors"></ul>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('loginForm');
+    form.addEventListener('submit', function(e){
+      const errs = [];
+      const username = form.querySelector('#id_username').value.trim();
+      const password = form.querySelector('#id_password').value;
+      if(username.length < 3) errs.push('Enter a valid username.');
+      if(password.length < 1) errs.push('Password is required.');
+      const list = document.getElementById('loginErrors');
+      list.innerHTML = '';
+      if(errs.length){
+        e.preventDefault();
+        errs.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; list.appendChild(li); });
+      }
+    });
+  })
+</script>
+{% endblock %}
+

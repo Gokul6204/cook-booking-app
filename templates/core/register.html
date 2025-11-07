@@ -1,0 +1,45 @@
+{% extends 'core/base.html' %}
+{% block title %}Register - Cook Booking Platform{% endblock %}
+{% block content %}
+<h2>Create Account</h2>
+<form method="post" class="form" id="registerForm" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-grid">
+    <label>Username {{ form.username }} {{ form.username.errors }}</label>
+    <label>Email {{ form.email }} {{ form.email.errors }}</label>
+    <label>Role {{ form.role }} {{ form.role.errors }}</label>
+    <label>Password {{ form.password1 }} {{ form.password1.errors }}</label>
+    <label>Confirm Password {{ form.password2 }} {{ form.password2.errors }}</label>
+  </div>
+  <button type="submit" class="btn">Register</button>
+  <p class="mt">Already have an account? <a href="{% url 'login' %}">Login</a></p>
+  <ul class="errors" id="registerErrors"></ul>
+  
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', function(e){
+      const errs = [];
+      const username = form.querySelector('#id_username').value.trim();
+      const email = form.querySelector('#id_email').value.trim();
+      const pass1 = form.querySelector('#id_password1').value;
+      const pass2 = form.querySelector('#id_password2').value;
+      if(username.length < 3) errs.push('Username must be at least 3 characters.');
+      if(!email.includes('@')) errs.push('Enter a valid email.');
+      if(pass1.length < 8) errs.push('Password must be at least 8 characters.');
+      if(pass1 !== pass2) errs.push('Passwords do not match.');
+      const list = document.getElementById('registerErrors');
+      list.innerHTML = '';
+      if(errs.length){
+        e.preventDefault();
+        errs.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; list.appendChild(li); });
+      }
+    });
+  })
+</script>
+{% endblock %}
+

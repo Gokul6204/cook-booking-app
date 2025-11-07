@@ -1,0 +1,36 @@
+{% extends 'core/base.html' %}
+{% block title %}Book {{ cook_user.get_full_name|default:cook_user.username }}{% endblock %}
+{% block content %}
+<h2>Book {{ cook_user.get_full_name|default:cook_user.username }}</h2>
+<form class="form" method="post" id="bookForm" novalidate>
+  {% csrf_token %}
+  {{ form.non_field_errors }}
+  <div class="form-grid">
+    <label>Date {{ form.date }} {{ form.date.errors }}</label>
+    <label>Time {{ form.time }} {{ form.time.errors }}</label>
+    <label>Duration (hours) {{ form.duration_hours }} {{ form.duration_hours.errors }}</label>
+  </div>
+  <button class="btn" type="submit">Request Booking</button>
+  <ul class="errors" id="bookErrors"></ul>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('bookForm');
+    form.addEventListener('submit', function(e){
+      const errs = [];
+      const date = form.querySelector('#id_date').value;
+      const time = form.querySelector('#id_time').value;
+      const dur = parseInt(form.querySelector('#id_duration_hours').value || '0');
+      if(!date) errs.push('Date is required.');
+      if(!time) errs.push('Time is required.');
+      if(!(dur > 0)) errs.push('Duration must be greater than 0.');
+      const list = document.getElementById('bookErrors');
+      list.innerHTML = '';
+      if(errs.length){ e.preventDefault(); errs.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; list.appendChild(li); }); }
+    });
+  })
+</script>
+{% endblock %}
+

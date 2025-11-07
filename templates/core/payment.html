@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+{% block title %}Complete Payment{% endblock %}
+{% block content %}
+<h2>Complete Payment</h2>
+<div class="form mt">
+  <p><strong>Cook:</strong> {{ booking.cook.username }}</p>
+  <p><strong>Date & Time:</strong> {{ booking.date }} {{ booking.time }} ({{ booking.duration_hours }}h)</p>
+  <p><strong>Amount:</strong> ${{ amount }}</p>
+</div>
+
+<form method="post" class="form mt" id="paymentForm" novalidate>
+  {% csrf_token %}
+  <div class="form-grid">
+    <label>Card Number <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19"></label>
+    <label>Expiry (MM/YY) <input type="text" id="expiry" placeholder="12/30" maxlength="5"></label>
+    <label>CVC <input type="text" id="cvc" placeholder="123" maxlength="4"></label>
+    <label>Name on Card <input type="text" id="cardName" placeholder="JOHN DOE"></label>
+  </div>
+  <button class="btn mt" type="submit">Pay Now</button>
+  <ul class="errors" id="paymentErrors"></ul>
+</form>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.addEventListener('DOMContentLoaded', function(){
+    const form = document.getElementById('paymentForm');
+    form.addEventListener('submit', function(e){
+      const errs = [];
+      const num = document.getElementById('cardNumber').value.replace(/\s+/g,'');
+      const exp = document.getElementById('expiry').value.trim();
+      const cvc = document.getElementById('cvc').value.trim();
+      const name = document.getElementById('cardName').value.trim();
+      if(num.length < 13) errs.push('Enter a valid card number.');
+      if(!/^\d{2}\/\d{2}$/.test(exp)) errs.push('Enter expiry as MM/YY.');
+      if(cvc.length < 3) errs.push('Enter a valid CVC.');
+      if(name.length < 2) errs.push('Enter the name on card.');
+      const list = document.getElementById('paymentErrors');
+      list.innerHTML = '';
+      if(errs.length){ e.preventDefault(); errs.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; list.appendChild(li); }); }
+    });
+  });
+  </script>
+{% endblock %}
+

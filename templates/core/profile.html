@@ -1,0 +1,133 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Your Profile{% endblock %}
+{% block content %}
+<h2>Your Profile</h2>
+
+<div class="profile-header mt">
+  <div class="profile-photo" style="width:80px;height:80px;">
+    {% if user.avatar %}
+      <img src="{{ user.avatar.url }}" alt="Avatar" />
+    {% elif user.role == 'cook' and profile_obj and profile_obj.photo %}
+      <img src="{{ profile_obj.photo.url }}" alt="Avatar" />
+    {% else %}
+      <img src="{% static 'img/avatar.svg' %}" alt="Avatar" />
+    {% endif %}
+  </div>
+  <div>
+    <div class="muted">Username</div>
+    <div>{{ user.username }}</div>
+    <div class="muted">Role</div>
+    <div>{{ user.role|title }}</div>
+  </div>
+</div>
+
+<!-- Read-only view -->
+<div id="profileView" class="profile-view mt" {% if user_form.errors or cook_form.errors %}style="display:none;"{% endif %}>
+  <div class="form">
+    <h3>Account Details</h3>
+    <div class="form-grid">
+      <div>
+        <div class="muted">First name</div>
+        <div>{{ user.first_name|default:"Not set" }}</div>
+      </div>
+      <div>
+        <div class="muted">Last name</div>
+        <div>{{ user.last_name|default:"Not set" }}</div>
+      </div>
+      <div>
+        <div class="muted">Email</div>
+        <div>{{ user.email|default:"Not set" }}</div>
+      </div>
+    </div>
+
+    {% if cook_form %}
+    <h3 class="mt">Cook Profile</h3>
+    <div class="form-grid">
+      <div>
+        <div class="muted">Cuisine</div>
+        <div>{{ profile_obj.cuisine|default:"Not set" }}</div>
+      </div>
+      <div>
+        <div class="muted">Dishes</div>
+        <div>{{ profile_obj.dishes|default:"Not set" }}</div>
+      </div>
+      <div>
+        <div class="muted">Experience (years)</div>
+        <div>{{ profile_obj.experience_years|default:"0" }}</div>
+      </div>
+      <div>
+        <div class="muted">Hourly Rate</div>
+        <div>${{ profile_obj.hourly_rate|default:"0" }}</div>
+      </div>
+      <div>
+        <div class="muted">Location</div>
+        <div>{{ profile_obj.location|default:"Not set" }}</div>
+      </div>
+      <div>
+        <div class="muted">Bio</div>
+        <div>{{ profile_obj.bio|default:"Not set" }}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <button class="btn mt" type="button" id="updateBtn">Update Profile</button>
+  </div>
+</div>
+
+<!-- Editable form (hidden by default, shown if errors exist) -->
+<form id="profileForm" class="form mt" method="post" enctype="multipart/form-data" {% if not user_form.errors and not cook_form.errors %}style="display:none;"{% endif %}>
+  {% csrf_token %}
+  <h3>Account Details</h3>
+  <div class="form-grid">
+    <label>First name {{ user_form.first_name }} {{ user_form.first_name.errors }}</label>
+    <label>Last name {{ user_form.last_name }} {{ user_form.last_name.errors }}</label>
+    <label>Email {{ user_form.email }} {{ user_form.email.errors }}</label>
+    <label>Avatar {{ user_form.avatar }} {{ user_form.avatar.errors }}</label>
+  </div>
+
+  {% if cook_form %}
+  <h3 class="mt">Cook Profile</h3>
+  <div class="form-grid">
+    <label>Cuisine {{ cook_form.cuisine }} {{ cook_form.cuisine.errors }}</label>
+    <label>Dishes {{ cook_form.dishes }} {{ cook_form.dishes.errors }}</label>
+    <label>Experience (years) {{ cook_form.experience_years }} {{ cook_form.experience_years.errors }}</label>
+    <label>Hourly Rate {{ cook_form.hourly_rate }} {{ cook_form.hourly_rate.errors }}</label>
+    <label>Location {{ cook_form.location }} {{ cook_form.location.errors }}</label>
+    <label>Bio {{ cook_form.bio }} {{ cook_form.bio.errors }}</label>
+    <label>Photo {{ cook_form.photo }} {{ cook_form.photo.errors }}</label>
+  </div>
+  {% endif %}
+
+  <div class="mt">
+    <button class="btn" type="submit">Save Changes</button>
+    <button class="btn btn-secondary" type="button" id="cancelBtn">Cancel</button>
+  </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    const view = document.getElementById('profileView');
+    const form = document.getElementById('profileForm');
+    const updateBtn = document.getElementById('updateBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    
+    if(updateBtn){
+      updateBtn.addEventListener('click', function(){
+        view.style.display = 'none';
+        form.style.display = 'block';
+      });
+    }
+    
+    if(cancelBtn){
+      cancelBtn.addEventListener('click', function(){
+        form.style.display = 'none';
+        view.style.display = 'block';
+      });
+    }
+  });
+</script>
+{% endblock %}
+

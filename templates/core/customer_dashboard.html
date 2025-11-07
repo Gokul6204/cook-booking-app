@@ -1,0 +1,56 @@
+{% extends 'core/base.html' %}
+{% block title %}Customer Dashboard{% endblock %}
+{% block content %}
+<h2>Customer Dashboard</h2>
+<section>
+  <h3>Upcoming Bookings</h3>
+  <div class="list">
+    {% for b in upcoming %}
+      <div class="list-item">
+        <div>
+          <strong>{{ b.cook.username }}</strong> — {{ b.date }} {{ b.time }} ({{ b.duration_hours }}h)
+          <div class="muted">Status: {{ b.status }} • Payment: {{ b.payment_status }}</div>
+        </div>
+        <div>
+          <a class="btn btn-secondary" href="{% url 'cook_profile' b.cook.id %}">View Cook</a>
+          {% if b.status == 'confirmed' and b.payment_status == 'pending' %}
+            <a class="btn" href="{% url 'pay_booking' b.id %}">Pay Now</a>
+          {% elif b.status == 'cancelled' %}
+            <a class="btn disabled" aria-disabled="true">Pay Disabled</a>
+          {% endif %}
+          {% if b.status != 'cancelled' and b.status != 'completed' %}
+            <a class="btn danger" href="{% url 'cancel_booking' b.id %}">Cancel</a>
+          {% else %}
+            <a class="btn danger disabled" aria-disabled="true">Cancel Disabled</a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>No upcoming bookings.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mt">
+  <h3>Past Bookings</h3>
+  <div class="list">
+    {% for b in past %}
+      <div class="list-item">
+        <div>
+          <strong>{{ b.cook.username }}</strong> — {{ b.date }} {{ b.time }} ({{ b.duration_hours }}h)
+          <div class="muted">Status: {{ b.status }} • Payment: {{ b.payment_status }}</div>
+        </div>
+        <div>
+          <a class="btn btn-secondary" href="{% url 'cook_profile' b.cook.id %}">View Cook</a>
+          {% if b.status == 'completed' and b.payment_status == 'paid' %}
+            <a class="btn" href="{% url 'add_review' b.cook.id %}">Rate Service</a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>No past bookings.</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}
+

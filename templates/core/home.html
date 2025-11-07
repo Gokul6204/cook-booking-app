@@ -1,0 +1,34 @@
+{% extends 'core/base.html' %}
+{% load static %}
+{% block title %}Home - Cook Booking Platform{% endblock %}
+{% block content %}
+<section class="hero">
+  <h1>Find and Book Talented Cooks</h1>
+  <p class="muted">Discover home chefs for your next event or personal dining experience.</p>
+  <a class="btn" href="{% url 'cook_list' %}">Browse Cooks</a>
+</section>
+
+<section>
+  <h2 class="section-title">Featured Cooks</h2>
+  <div class="grid">
+    {% for p in featured %}
+    <div class="card">
+      <div class="card-body">
+        <h3>{{ p.user.get_full_name|default:p.user.username }}</h3>
+        <p><span class="badge">{{ p.cuisine }}</span> • {{ p.location }}</p>
+        <p class="price">${{ p.hourly_rate }} / hr</p>
+        <p class="rating">Rating: {{ p.average_rating|floatformat:1 }}/5</p>
+        <a class="btn btn-secondary" href="{% url 'cook_profile' p.user.id %}">View Profile</a>
+      </div>
+    </div>
+    {% empty %}
+    <p>No featured cooks yet.</p>
+    {% endfor %}
+  </div>
+  <div class="center mt">
+    <a class="btn" href="{% url 'cook_list' %}">See All Cooks</a>
+  </div>
+  
+</section>
+{% endblock %}
+

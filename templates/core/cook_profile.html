@@ -1,0 +1,79 @@
+{% extends 'core/base.html' %}
+{% block title %}Cook Profile - {{ cook_user.get_full_name|default:cook_user.username }}{% endblock %}
+{% block content %}
+<div class="profile">
+  <div class="profile-header">
+    <div class="profile-photo">
+      {% if profile.photo %}
+        <img src="{{ profile.photo.url }}" alt="{{ cook_user.username }}" />
+      {% else %}
+        <div class="placeholder">No Photo</div>
+      {% endif %}
+    </div>
+    <div>
+      <h2>{{ cook_user.get_full_name|default:cook_user.username }}</h2>
+      <p>{{ profile.cuisine }} • {{ profile.location }}</p>
+      <p>Experience: {{ profile.experience_years }} years</p>
+      <p>Rate: ${{ profile.hourly_rate }} / hr</p>
+      <p>Rating: {{ profile.average_rating|floatformat:1 }}/5</p>
+    </div>
+  </div>
+  <p class="mt">{{ profile.bio }}</p>
+  <p><strong>Dishes:</strong> {{ profile.dishes }}</p>
+  <div class="divider"></div>
+
+  {% if user.is_authenticated and user.role == 'customer' %}
+  <section class="mt">
+    <h3>Book this Cook</h3>
+    <form class="form" method="post" action="{% url 'book_cook' cook_user.id %}" id="bookingForm" novalidate>
+      {% csrf_token %}
+      {{ booking_form.non_field_errors }}
+      <div class="form-grid">
+        <label>Date {{ booking_form.date }} {{ booking_form.date.errors }}</label>
+        <label>Time {{ booking_form.time }} {{ booking_form.time.errors }}</label>
+        <label>Duration (hours) {{ booking_form.duration_hours }} {{ booking_form.duration_hours.errors }}</label>
+      </div>
+      <button class="btn" type="submit">Request Booking</button>
+      <ul class="errors" id="bookingErrors"></ul>
+    </form>
+  </section>
+  {% endif %}
+
+  <section class="mt">
+    <h3>Reviews</h3>
+    <div>
+      {% for r in reviews %}
+        <div class="review">
+          <div><strong>{{ r.customer.username }}</strong> rated {{ r.rating }}/5</div>
+          <div>{{ r.comment }}</div>
+          <div class="muted">{{ r.created_at }}</div>
+        </div>
+      {% empty %}
+        <p>No reviews yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  window.addEventListener('DOMContentLoaded', function(){
+    const bookingForm = document.getElementById('bookingForm');
+    if(bookingForm){
+      bookingForm.addEventListener('submit', function(e){
+        const errs = [];
+        const date = bookingForm.querySelector('#id_date').value;
+        const time = bookingForm.querySelector('#id_time').value;
+        const dur = parseInt(bookingForm.querySelector('#id_duration_hours').value || '0');
+        if(!date) errs.push('Date is required.');
+        if(!time) errs.push('Time is required.');
+        if(!(dur > 0)) errs.push('Duration must be greater than 0.');
+        const list = document.getElementById('bookingErrors');
+        list.innerHTML = '';
+        if(errs.length){ e.preventDefault(); errs.forEach(t=>{ const li=document.createElement('li'); li.textContent=t; list.appendChild(li); }); }
+      });
+    }
+  });
+</script>
+{% endblock %}
+

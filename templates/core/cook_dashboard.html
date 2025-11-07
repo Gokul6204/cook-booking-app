@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+{% block title %}Cook Dashboard{% endblock %}
+{% block content %}
+<h2>Cook Dashboard</h2>
+<section class="mt">
+  <h3>Your Bookings</h3>
+  <div class="list">
+    {% for b in bookings %}
+      <div class="list-item">
+        <div>
+          <strong>{{ b.customer.username }}</strong> — {{ b.date }} {{ b.time }} ({{ b.duration_hours }}h)
+          <div class="muted">Status: {{ b.status }} • Payment: {{ b.payment_status }}</div>
+        </div>
+        <div>
+          {% if b.status == 'requested' %}
+            <a class="btn" href="{% url 'confirm_booking' b.id %}">Confirm</a>
+          {% else %}
+            <a class="btn disabled" aria-disabled="true">Confirm Disabled</a>
+          {% endif %}
+          {% if b.status == 'confirmed' and b.payment_status == 'paid' %}
+            <a class="btn" href="{% url 'complete_booking' b.id %}">Mark Completed</a>
+          {% elif b.status == 'completed' %}
+            <a class="btn disabled" aria-disabled="true">Completed</a>
+          {% endif %}
+          {% if b.status != 'cancelled' and b.status != 'completed' %}
+            <a class="btn danger" href="{% url 'cancel_booking' b.id %}">Cancel</a>
+          {% else %}
+            <a class="btn danger disabled" aria-disabled="true">Cancel Disabled</a>
+          {% endif %}
+        </div>
+      </div>
+    {% empty %}
+      <p>No bookings yet.</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="mt">
+  <h3>Earnings Summary</h3>
+  <p>Total booked hours (completed): {{ total_hours }}</p>
+</section>
+{% endblock %}
+

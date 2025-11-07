@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Cusine Masetros{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header class="header">
+        <div class="container nav">
+            <nav class="nav-items" id="navMenu">
+            <img src="{% static 'img/cusine_maestros_logo.jpg' %}" alt="app logo" class="app-logo">
+            <a href="{% url 'home' %}" class="brand">Cusine Masetros</a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation" aria-expanded="false">
+                <span></span><span></span><span></span>
+            </button>
+            </nav>
+            <nav class="nav-items" id="navMenu">
+                <a href="{% url 'cook_list' %}">Find Cooks</a>
+                {% if user.is_authenticated %}
+                
+                    {% if user.role == 'customer' %}
+                        <a href="{% url 'customer_dashboard' %}">Customer Dashboard</a>
+                    {% elif user.role == 'cook' %}
+                        <a href="{% url 'cook_dashboard' %}">Cook Dashboard</a>
+                    {% endif %}
+                    <a href="{% url 'logout' %}">Logout</a>
+                    <a href="{% url 'profile' %}" class="avatar-link" title="Your profile">
+                        <span class="avatar">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}" alt="avatar" />
+                            {% elif user.role == 'cook' and user.cook_profile and user.cook_profile.photo %}
+                                <img src="{{ user.cook_profile.photo.url }}" alt="avatar" />
+                            {% else %}
+                                <img src="{% static 'img/avatar.svg' %}" alt="avatar" />
+                            {% endif %}
+                        </span>
+                    </a>
+                {% else %}
+                    <a href="{% url 'login' %}">Login</a>
+                    <a href="{% url 'register' %}">Register</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="footer">
+        <div class="container">&copy; {{ now|date:'Y' }} Cook Booking Platform</div>
+    </footer>
+
+    <script src="{% static 'js/main.js' %}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>
+
